@@ -1,30 +1,48 @@
-const { createServer } = require('http');
-const app = require('express')();
+const { createServer } = require('node:http');
+const path = require('node:path');
+const express = require('express');
+const app = express();
 const { Server } = require('socket.io');
-const serverConfig = require('./config');
+const viewsRouter = require('./routes/views.routes');
+const authSocketCallBalck = require('./app/authSocketCallBalck');
+const appSocketCallBack = require('./app/appSocketCallBack');
+
+app.use(express.static(path.join(process.cwd(), 'public')));
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.json());
+
+app.use(viewsRouter);
 
 
 const server = createServer(app);
-const io = new Server(server, { cors: { origin: '*' } });
+const io = new Server(server);
 
-const allUser = {};
+const authSocket = io.of('/auth');
+const appSocket  = io.of('/app');
 
-io.on('connection', (socket)=>{
-    // console.log(socket.handshake);  
-    socket.on('connected', ({username})=>{
-        allUser[username] = socket.id;
-        console.log(allUser);
-        
-        io.emit('joined',{joinedUsername: username, allUser});
-    })  
-
-    socket.on('send', ({from, to, message })=>{
-        const socketId = allUser[to];
-        socket.to(socketId).emit('resive', { from, message })
-    })
-    
-})
+authSocket.on('connection', authSocketCallBalck);
+appSocket.on('connection', (socket) => appSocketCallBack(socket, appSocket));
 
 
-const { PORT } = serverConfig;
-server.listen(PORT, ()=>console.log(`Server is running on port${PORT}`))    
+const { PORT } = require('./config');
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

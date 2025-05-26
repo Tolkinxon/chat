@@ -1,0 +1,18 @@
+[
+    {
+        "id": 1,
+        "username": "tolkinxon",
+        "email": "tolkinxon@gmail.com",
+        "password": "tolkinxon",
+        "createdAt": "26.05.2025",
+        "updatedAt": null
+    },
+    {
+        "id": 2,
+        "username": "akmal",
+        "email": "akmal@gmail.com",
+        "password": "akmal",
+        "createdAt": "26.05.2025",
+        "updatedAt": null
+    }
+]
