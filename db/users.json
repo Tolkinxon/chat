@@ -14,5 +14,13 @@
         "password": "akmal",
         "createdAt": "26.05.2025",
         "updatedAt": null
+    },
+    {
+        "id": 3,
+        "username": "ali",
+        "email": "ali@gmail.com",
+        "password": "ali",
+        "createdAt": "26.05.2025",
+        "updatedAt": null
     }
 ]

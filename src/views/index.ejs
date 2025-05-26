@@ -7,16 +7,19 @@
 </head>
 <body>
 
-  <div class="chat-container" id="chat">
-    <!-- Xabarlar shu yerda chiqadi -->
-  </div>
+    <div class="chaters">hello world</div>
+    <div class="wrapper">
+        <div class="chat-container" id="chat">
+            <!-- Xabarlar shu yerda chiqadi -->
+        </div>
 
-  <form class="input-area">
-    <input type="text" id="messageInput" placeholder="Xabar yozing..." name="text">
-    <select id="senderSelect" name="selectedUser">
-    </select>
-    <button>Yuborish</button>
-  </form>
+         <form class="input-area">
+            <input type="text" id="messageInput" placeholder="Xabar yozing..." name="text">
+            <button>Yuborish</button>
+        </form>
+    </div>
+
+ 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/index.js"></script>
 </body>

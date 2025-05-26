@@ -3,6 +3,7 @@ const { readFile, writeFile } = require("../model/model");
 const checkToken = require('../utils/checktoken');
 
 const allUser = {};
+const messages = [];
 
 appSocketCallBack = async function(socket, io){
     const token = socket.handshake.auth.token;
@@ -12,12 +13,18 @@ appSocketCallBack = async function(socket, io){
     socket.on('connected', ({username})=>{
         allUser[username] = socket.id;
         io.emit('joined',{joinedUsername: username, allUser});
+        io.emit('resive', messages);
     })  
 
     socket.on('send', ({from, to, message })=>{
-        const socketId = allUser[to];
-        socket.to(socketId).emit('resive', { from, message })
+        messages.push({from, to, message});
+        io.emit('resive', messages);
     })
+
+    socket.on('changePartner',()=>{
+       io.emit('resive', messages);
+    })
+    
 }
 
 module.exports = appSocketCallBack;

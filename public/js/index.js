@@ -7,20 +7,35 @@ const chatContainer = document.getElementById('chat');
 const senderSelect = document.getElementById('senderSelect');
 const elForm = document.querySelector('form');
 const input = document.getElementById('messageInput');
+const elChaters = document.querySelector('.chaters');
 
 
     
     function renderUsers(obj){
-        senderSelect.innerHTML = '';
+        elChaters.innerHTML = '';
         for(let key in obj){
             if(key != username){
-                const option = document.createElement('option');
-                option.textContent = key;
-                option.value = key;
-                senderSelect.append(option);
+                const p = document.createElement('p');
+                p.classList.add('chaters-item')
+                p.textContent = key;
+                p.value = key;
+                p.dataset.id = key;
+                elChaters.append(p);
             }
         }
+        elChaters.childNodes[0].classList.add('active');
+        window.localStorage.setItem('partner', elChaters.childNodes[0].dataset.id);
     }
+
+    elChaters.addEventListener('click', (evt)=>{
+      const chater = evt.target.matches('.chaters-item');
+      if(chater) {
+        elChaters.childNodes.forEach(item => item.classList.remove('active'));
+        evt.target.classList.add('active');
+        window.localStorage.setItem('partner', evt.target.dataset.id);
+        socket.emit('changePartner')
+      }
+    })
 
     socket.emit('connected', { username });
     socket.on('joined', ({joinedUsername, allUser})=>{
@@ -29,12 +44,17 @@ const input = document.getElementById('messageInput');
         renderUsers(allUser);
     });
 
-    socket.on('resive', ({from, message })=>{
-        console.log(from, message);
-        sendMessage(message, from);
+    socket.on('resive', (messages)=>{
+        const partner = window.localStorage.getItem('partner')
+        chatContainer.innerHTML = '';
+        messages.forEach(({ from, to, message }) => {
+          if(from == username && to == partner) sendMessage(message, undefined);
+          if(from == partner && to == username) sendMessage(message, from);
+        })
     })
 
     function sendMessage(text, user='') {
+      
       const now = new Date();
       const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -69,7 +89,8 @@ const input = document.getElementById('messageInput');
         const data = Object.fromEntries(formData);
         if (data.text === '') return;
         sendMessage(data.text, undefined);
-        socket.emit('send', {from: username, to: data.selectedUser, message: data.text});
+        const partner = window.localStorage.getItem('partner')
+        socket.emit('send', {from: username, to: partner, message: data.text});
         input.value = '';
         input.focus();
     });
