@@ -1,17 +1,18 @@
-const { createServer } = require('node:http');
-const path = require('node:path');
-const express = require('express');
+import { createServer } from 'node:http';
+import path from 'node:path';
+import express, { RequestHandler } from 'express';
 const app = express();
-const { Server } = require('socket.io');
-const viewsRouter = require('./routes/views.routes');
-const authSocketCallBalck = require('./app/authSocketCallBalck');
-const appSocketCallBack = require('./app/appSocketCallBack');
+import { Server } from 'socket.io';
+import viewsRouter  from './routes/views.routes';
+import authSocketCallBalck from './app/authSocketCallBalck';
+import appSocketCallBack from './app/appSocketCallBack';
+import { globalError } from './middlewares/globalError';
 
 app.use(express.static(path.join(process.cwd(), 'public')));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.json());
-
+app.use(globalError as express.ErrorRequestHandler);
 app.use(viewsRouter);
 
 
@@ -25,7 +26,8 @@ authSocket.on('connection', authSocketCallBalck);
 appSocket.on('connection', (socket) => appSocketCallBack(socket, appSocket));
 
 
-const { PORT } = require('./config');
+import serverConfig from './config';
+const {PORT} =serverConfig
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

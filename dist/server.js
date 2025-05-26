@@ -1,0 +1,31 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const node_http_1 = require("node:http");
+const node_path_1 = __importDefault(require("node:path"));
+const express_1 = __importDefault(require("express"));
+const app = (0, express_1.default)();
+const socket_io_1 = require("socket.io");
+const views_routes_1 = __importDefault(require("./routes/views.routes"));
+const authSocketCallBalck_1 = __importDefault(require("./app/authSocketCallBalck"));
+const appSocketCallBack_1 = __importDefault(require("./app/appSocketCallBack"));
+const globalError_1 = require("./middlewares/globalError");
+app.use(express_1.default.static(node_path_1.default.join(process.cwd(), 'public')));
+app.set('view engine', 'ejs');
+app.set('views', node_path_1.default.join(__dirname, 'views'));
+app.use(express_1.default.json());
+app.use(globalError_1.globalError);
+app.use(views_routes_1.default);
+const server = (0, node_http_1.createServer)(app);
+const io = new socket_io_1.Server(server);
+const authSocket = io.of('/auth');
+const appSocket = io.of('/app');
+authSocket.on('connection', authSocketCallBalck_1.default);
+appSocket.on('connection', (socket) => (0, appSocketCallBack_1.default)(socket, appSocket));
+const config_1 = __importDefault(require("./config"));
+const { PORT } = config_1.default;
+server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});

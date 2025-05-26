@@ -1,11 +1,12 @@
-const fs = require('fs/promises');
-const { readFile, writeFile } = require("../model/model");
-const checkToken = require('../utils/checktoken');
+import fs  from 'fs/promises';
+import { checkToken } from '../utils/checktoken';
+import { Namespace, Socket } from 'socket.io';
+import { Messages } from '../types/messages.dto';
 
-const allUser = {};
-const messages = [];
+const allUser:any = {};
+const messages:Messages[] = [];
 
-appSocketCallBack = async function(socket, io){
+const appSocketCallBack = async function(socket:Socket, io:Namespace){
     const token = socket.handshake.auth.token;
     const checking = await checkToken(token);
     if(!checking.status) return socket.emit('tokenError', {message: checking.message});
@@ -27,4 +28,4 @@ appSocketCallBack = async function(socket, io){
     
 }
 
-module.exports = appSocketCallBack;
+export default appSocketCallBack;

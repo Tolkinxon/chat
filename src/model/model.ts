@@ -1,15 +1,15 @@
-const fs = require('fs/promises');
-const serverConfig = require('../config');
+import fs from'fs/promises';
+import  serverConfig  from'../config';
 const { dbPath } = serverConfig;
 
-async function readFile(fileName){
+async function readFile(fileName:string){
     let data = await fs.readFile(dbPath(fileName), 'utf-8');
     return data ? JSON.parse(data):[];
 }
 
-async function writeFile(fileName, data){
+async function writeFile(fileName:string, data:object){
     await fs.writeFile(dbPath(fileName), JSON.stringify(data, null, 4));
     return true;
 }
 
-module.exports = { readFile, writeFile }
+export { readFile, writeFile };
